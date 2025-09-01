@@ -26,7 +26,7 @@ function AuthProvider  ({ children }) {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+          const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ function AuthProvider  ({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -85,7 +85,7 @@ function AuthProvider  ({ children }) {
 
   const register = async (userData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -119,7 +119,7 @@ function AuthProvider  ({ children }) {
     try {
       console.log('updateProfile called with:', profileData);
       
-      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -148,7 +148,7 @@ function AuthProvider  ({ children }) {
     try {
       console.log('updateSuperAdminProfile called with:', profileData);
       
-      const response = await fetch(`${API_BASE_URL}/auth/super-admin/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/super-admin/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -181,7 +181,7 @@ function AuthProvider  ({ children }) {
         newPasswordLength: newPassword?.length
       });
 
-      const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -205,7 +205,7 @@ function AuthProvider  ({ children }) {
 
   const getAllUsers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -226,7 +226,7 @@ function AuthProvider  ({ children }) {
 
   const createAdmin = async (adminData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/create-admin`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/create-admin`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -249,7 +249,7 @@ function AuthProvider  ({ children }) {
 
   const updateUserRole = async (userId, role) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -272,7 +272,7 @@ function AuthProvider  ({ children }) {
 
   const updateUserStatus = async (userId, isActive) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users/${userId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -295,7 +295,7 @@ function AuthProvider  ({ children }) {
 
   const deleteUser = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users/${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
