@@ -323,7 +323,7 @@ function AuthProvider  ({ children }) {
       
       const profile = result.user;
       // Ask backend to upsert user and issue JWT
-      const response = await fetch(`${API_BASE_URL}/auth/google`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
