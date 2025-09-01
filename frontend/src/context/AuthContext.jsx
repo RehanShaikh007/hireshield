@@ -19,7 +19,7 @@ function AuthProvider  ({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'https://hireshield.onrender.com/';
+  const API_BASE_URL = 'https://hireshield.onrender.com';
 
   // Check if user is authenticated on app load
   useEffect(() => {
