@@ -1,6 +1,6 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useLanguage } from '../context/LanguageContext'
+import React from "react";
+import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -10,34 +10,65 @@ const Footer = () => {
         <div className="text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-2 mb-3">
             <div />
-            <img src="./hire_logo.png" className='w-16 h-16 sm:w-20 sm:h-20' alt="hire shield logo" />
-            <span className="font-semibold text-white text-lg sm:text-xl">HireShield</span>
+            <img
+              src="./hire_logo.png"
+              className="w-16 h-16 sm:w-20 sm:h-20"
+              alt="hire shield logo"
+            />
+            <span className="font-semibold text-white text-lg sm:text-xl">
+              HireShield
+            </span>
           </div>
-          <p className="text-xs sm:text-sm">Reliable background verification services to help you trust with confidence.</p>
+          <p className="text-xs sm:text-sm">
+            Reliable background verification services to help you trust with
+            confidence.
+          </p>
         </div>
         <div className="text-center sm:text-left">
-          <h4 className="text-white font-semibold mb-3 text-base sm:text-lg">Quick Links</h4>
+          <h4 className="text-white font-semibold mb-3 text-base sm:text-lg">
+            Quick Links
+          </h4>
           <ul className="space-y-2 text-xs sm:text-sm">
-            <li><Link to="/services" className="hover:text-white">{t('services')}</Link></li>
-            <li><Link to="/about" className="hover:text-white">{t('about')}</Link></li>
-            <li><Link to="/privacy" className="hover:text-white">{t('privacyPolicy')}</Link></li>
-            <li><Link to="/contact" className="hover:text-white">{t('contact')}</Link></li>
+            <li>
+              <Link to="/services" className="hover:text-white">
+                {t("services")}
+              </Link>
+            </li>
+            <li>
+              <Link to="/about" className="hover:text-white">
+                {t("about")}
+              </Link>
+            </li>
+            <li>
+              <Link to="/privacy" className="hover:text-white">
+                {t("privacyPolicy")}
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="hover:text-white">
+                {t("contact")}
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="text-center sm:text-left">
-          <h4 className="text-white font-semibold mb-3 text-base sm:text-lg">{t('contact')}</h4>
+          <h4 className="text-white font-semibold mb-3 text-base sm:text-lg">
+            {t("contact")}
+          </h4>
           <p className="text-xs sm:text-sm">Phone: +91 99999 99999</p>
           <p className="text-xs sm:text-sm">Email: support@veritrust.in</p>
-          <p className="text-xs sm:text-sm">Address: 123, Business Park, Bengaluru</p>
+          <p className="text-xs sm:text-sm">
+            Address: 123, Business Park, Bengaluru
+          </p>
         </div>
       </div>
       <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 py-3 sm:py-4 text-xs text-gray-500 text-center">© {new Date().getFullYear()} Hireshield. {t('allRightsReserved')}</div>
+        <div className="container mx-auto px-4 py-3 sm:py-4 text-xs text-gray-500 text-center">
+          © {new Date().getFullYear()} Hireshield. {t("allRightsReserved")}
+        </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
-
-
+export default Footer;

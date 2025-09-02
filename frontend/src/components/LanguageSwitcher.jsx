@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useState, useRef, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
 const LanguageSwitcher = () => {
   const { currentLanguage, changeLanguage, t } = useLanguage();
@@ -7,12 +7,12 @@ const LanguageSwitcher = () => {
   const dropdownRef = useRef(null);
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
-    { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' }
+    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "ta", name: "தமிழ்", flag: "🇮🇳" },
+    { code: "kn", name: "ಕನ್ನಡ", flag: "🇮🇳" },
   ];
 
-  const currentLang = languages.find(lang => lang.code === currentLanguage);
+  const currentLang = languages.find((lang) => lang.code === currentLanguage);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -21,9 +21,9 @@ const LanguageSwitcher = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -40,14 +40,23 @@ const LanguageSwitcher = () => {
         aria-label="Language switcher"
       >
         <span className="text-lg">{currentLang?.flag}</span>
-        <span className="text-sm font-medium hidden sm:block">{currentLang?.name}</span>
+        <span className="text-sm font-medium hidden sm:block">
+          {currentLang?.name}
+        </span>
         <svg
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -59,18 +68,32 @@ const LanguageSwitcher = () => {
                 key={language.code}
                 onClick={() => handleLanguageChange(language.code)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-white/15 transition-colors duration-200 ${
-                  currentLanguage === language.code ? 'bg-white/20' : ''
+                  currentLanguage === language.code ? "bg-white/20" : ""
                 }`}
               >
                 <span className="text-lg">{language.flag}</span>
-                <span className={`text-sm font-medium ${
-                  currentLanguage === language.code ? 'text-white' : 'text-gray-200'
-                }`}>
+                <span
+                  className={`text-sm font-medium ${
+                    currentLanguage === language.code
+                      ? "text-white"
+                      : "text-gray-200"
+                  }`}
+                >
                   {language.name}
                 </span>
                 {currentLanguage === language.code && (
-                  <svg className="w-4 h-4 text-white ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-4 h-4 text-white ml-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 )}
               </button>

@@ -1,25 +1,25 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase.js';
-import toast from 'react-hot-toast';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase.js";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
-function useAuth () {
+function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
-export {useAuth};
+}
+export { useAuth };
 
-function AuthProvider  ({ children }) {
+function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = 'https://hireshield.onrender.com';
+  const API_BASE_URL = "https://hireshield.onrender.com";
 
   // Check if user is authenticated on app load
   useEffect(() => {
@@ -28,9 +28,9 @@ function AuthProvider  ({ children }) {
         try {
           const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           });
 
           if (response.ok) {
@@ -38,12 +38,12 @@ function AuthProvider  ({ children }) {
             setUser(data.user);
           } else {
             // Token is invalid, clear it
-            localStorage.removeItem('token');
+            localStorage.removeItem("token");
             setToken(null);
           }
         } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('token');
+          console.error("Auth check failed:", error);
+          localStorage.removeItem("token");
           setToken(null);
         }
       }
@@ -53,17 +53,14 @@ function AuthProvider  ({ children }) {
     checkAuth();
   }, [token]);
 
-
-
-
   const login = async (email, password) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -71,26 +68,26 @@ function AuthProvider  ({ children }) {
       if (response.ok) {
         setUser(data.user);
         setToken(data.token);
-        localStorage.setItem('token', data.token);
-        toast.success('Login successful');
+        localStorage.setItem("token", data.token);
+        toast.success("Login successful");
         return { success: true, data };
       } else {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      toast.error('Login failed. Please try again.');
-      return { success: false, error: 'Login failed. Please try again.' };
+      toast.error("Login failed. Please try again.");
+      return { success: false, error: "Login failed. Please try again." };
     }
   };
 
   const register = async (userData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
 
       const data = await response.json();
@@ -103,95 +100,111 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      toast.error('Registration failed. Please try again.');
-      return { success: false, error: 'Registration failed. Please try again.' };
+      toast.error("Registration failed. Please try again.");
+      return {
+        success: false,
+        error: "Registration failed. Please try again.",
+      };
     }
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    toast.success('Logged out successfully');
+    localStorage.removeItem("token");
+    toast.success("Logged out successfully");
   };
 
   const updateProfile = async (profileData) => {
     try {
-      console.log('updateProfile called with:', profileData);
-      
+      console.log("updateProfile called with:", profileData);
+
       const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(profileData)
+        body: JSON.stringify(profileData),
       });
 
       const data = await response.json();
-      console.log('updateProfile response:', { status: response.status, data });
+      console.log("updateProfile response:", { status: response.status, data });
 
       if (response.ok) {
-
         setUser(data.user);
         return { success: true, data };
       } else {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      console.error('updateProfile error:', error);
-      return { success: false, error: 'Profile update failed. Please try again.' };
+      console.error("updateProfile error:", error);
+      return {
+        success: false,
+        error: "Profile update failed. Please try again.",
+      };
     }
   };
 
   const updateSuperAdminProfile = async (profileData) => {
     try {
-      console.log('updateSuperAdminProfile called with:', profileData);
-      
-      const response = await fetch(`${API_BASE_URL}/api/auth/super-admin/profile`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileData)
-      });
+      console.log("updateSuperAdminProfile called with:", profileData);
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/auth/super-admin/profile`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profileData),
+        }
+      );
 
       const data = await response.json();
-      console.log('updateSuperAdminProfile response:', { status: response.status, data });
+      console.log("updateSuperAdminProfile response:", {
+        status: response.status,
+        data,
+      });
 
       if (response.ok) {
-
         setUser(data.user);
         return { success: true, data };
       } else {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      console.error('updateSuperAdminProfile error:', error);
-      return { success: false, error: 'Profile update failed. Please try again.' };
+      console.error("updateSuperAdminProfile error:", error);
+      return {
+        success: false,
+        error: "Profile update failed. Please try again.",
+      };
     }
   };
 
   const changePassword = async (currentPassword, newPassword) => {
     try {
-      console.log('Frontend: Attempting password change with:', {
+      console.log("Frontend: Attempting password change with:", {
         currentPasswordProvided: !!currentPassword,
         newPasswordProvided: !!newPassword,
-        newPasswordLength: newPassword?.length
+        newPasswordLength: newPassword?.length,
       });
 
       const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ currentPassword, newPassword })
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
       const data = await response.json();
-      console.log('Frontend: Password change response:', { status: response.status, data });
+      console.log("Frontend: Password change response:", {
+        status: response.status,
+        data,
+      });
 
       if (response.ok) {
         return { success: true, data };
@@ -199,7 +212,10 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch {
-      return { success: false, error: 'Password change failed. Please try again.' };
+      return {
+        success: false,
+        error: "Password change failed. Please try again.",
+      };
     }
   };
 
@@ -207,9 +223,9 @@ function AuthProvider  ({ children }) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await response.json();
@@ -220,19 +236,19 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      return { success: false, error: 'Failed to fetch users.' };
+      return { success: false, error: "Failed to fetch users." };
     }
   };
 
   const createAdmin = async (adminData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/create-admin`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(adminData)
+        body: JSON.stringify(adminData),
       });
 
       const data = await response.json();
@@ -243,20 +259,23 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      return { success: false, error: 'Failed to create admin user.' };
+      return { success: false, error: "Failed to create admin user." };
     }
   };
 
   const updateUserRole = async (userId, role) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ role })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/auth/users/${userId}/role`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ role }),
+        }
+      );
 
       const data = await response.json();
 
@@ -266,20 +285,23 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      return { success: false, error: 'Failed to update user role.' };
+      return { success: false, error: "Failed to update user role." };
     }
   };
 
   const updateUserStatus = async (userId, isActive) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ isActive })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/auth/users/${userId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isActive }),
+        }
+      );
 
       const data = await response.json();
 
@@ -289,18 +311,18 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      return { success: false, error: 'Failed to update user status.' };
+      return { success: false, error: "Failed to update user status." };
     }
   };
 
   const deleteUser = async (userId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/users/${userId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await response.json();
@@ -311,52 +333,67 @@ function AuthProvider  ({ children }) {
         return { success: false, error: data.message };
       }
     } catch (error) {
-      return { success: false, error: 'Failed to delete user.' };
+      return { success: false, error: "Failed to delete user." };
     }
   };
 
   const googleSignIn = async () => {
     try {
-      console.log('Starting Google sign-in...');
+      console.log("Starting Google sign-in...");
       const result = await signInWithPopup(auth, googleProvider);
-      console.log('Google sign-in successful:', result.user);
-      
+      console.log("Google sign-in successful:", result.user);
+
       const profile = result.user;
       // Ask backend to upsert user and issue JWT
       const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: profile.email,
           googleId: profile.uid,
-          firstName: profile.displayName?.split(' ')?.[0] || 'First',
-          lastName: profile.displayName?.split(' ')?.slice(1).join(' ') || 'Last',
+          firstName: profile.displayName?.split(" ")?.[0] || "First",
+          lastName:
+            profile.displayName?.split(" ")?.slice(1).join(" ") || "Last",
           // Username fallback: before @, plus random suffix
-          username: (profile.email?.split('@')[0] || 'user') + Math.floor(Math.random()*1000)
-        })
+          username:
+            (profile.email?.split("@")[0] || "user") +
+            Math.floor(Math.random() * 1000),
+        }),
       });
-      
+
       const data = await response.json();
-      console.log('Backend response:', { status: response.status, data });
-      
+      console.log("Backend response:", { status: response.status, data });
+
       if (!response.ok) return { success: false, error: data.message };
 
       setUser(data.user);
       setToken(data.token);
-      localStorage.setItem('token', data.token);
+      localStorage.setItem("token", data.token);
       return { success: true, data };
     } catch (error) {
-      console.error('Google sign-in error details:', error);
-      if (error.code === 'auth/popup-closed-by-user') {
-        return { success: false, error: 'Sign-in was cancelled' };
-      } else if (error.code === 'auth/popup-blocked') {
-        return { success: false, error: 'Pop-up was blocked. Please allow pop-ups and try again.' };
-      } else if (error.code === 'auth/unauthorized-domain') {
-        return { success: false, error: 'This domain is not authorized for Google sign-in' };
-      } else if (error.code === 'auth/invalid-credential') {
-        return { success: false, error: 'Invalid credentials. Please try again.' };
+      console.error("Google sign-in error details:", error);
+      if (error.code === "auth/popup-closed-by-user") {
+        return { success: false, error: "Sign-in was cancelled" };
+      } else if (error.code === "auth/popup-blocked") {
+        return {
+          success: false,
+          error: "Pop-up was blocked. Please allow pop-ups and try again.",
+        };
+      } else if (error.code === "auth/unauthorized-domain") {
+        return {
+          success: false,
+          error: "This domain is not authorized for Google sign-in",
+        };
+      } else if (error.code === "auth/invalid-credential") {
+        return {
+          success: false,
+          error: "Invalid credentials. Please try again.",
+        };
       } else {
-        return { success: false, error: `Google sign-in failed: ${error.message}` };
+        return {
+          success: false,
+          error: `Google sign-in failed: ${error.message}`,
+        };
       }
     }
   };
@@ -378,15 +415,11 @@ function AuthProvider  ({ children }) {
     deleteUser,
     googleSignIn,
     isAuthenticated: !!token,
-    isSuperAdmin: user?.role === 'super_admin',
-    isAdmin: user?.role === 'admin' || user?.role === 'super_admin'
+    isSuperAdmin: user?.role === "super_admin",
+    isAdmin: user?.role === "admin" || user?.role === "super_admin",
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
-export {AuthProvider};
+export { AuthProvider };

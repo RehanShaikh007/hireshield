@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-
 /* Base styles for typography rhythm */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -17,10 +18,18 @@ html {
 }
 
 /* Ensure react-slick fills the hero container */
-.hero-carousel .slick-list { height: 100%; }
-.hero-carousel .slick-track { height: 100%; }
-.hero-carousel .slick-slide { height: 100%; }
-.hero-carousel .slick-slide > div { height: 100%; }
+.hero-carousel .slick-list {
+  height: 100%;
+}
+.hero-carousel .slick-track {
+  height: 100%;
+}
+.hero-carousel .slick-slide {
+  height: 100%;
+}
+.hero-carousel .slick-slide > div {
+  height: 100%;
+}
 
 /* Ensure slick dots are horizontal and centered */
 .hero-carousel .slick-dots {
@@ -36,5 +45,3 @@ html {
 .hero-carousel .slick-dots li button {
   padding: 0;
 }
-
-
