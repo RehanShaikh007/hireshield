@@ -43,13 +43,13 @@ const TeamPage = () => {
       name: 'Kumar Jagannath',
       title: 'Business Strategy & Operations',
       phone: '7996969355',
-      bio: 'Kumar is a dynamic business leader with years of experience in strategy, operations, and client engagement. Known for an analytical mindset and collaborative leadership, he has led communication and tech startups and digital media firms. He solves complex problems with simple, scalable solutions and mentors professionals navigating career transitions.'
+     bio: t('kumarJagannathBio')
     },
     {
       name: 'Divya Murugan',
       title: 'Brand & Growth Strategy',
       phone: '8105159428',
-      bio: 'Divya is a results-driven strategist with a strong background in brand development, digital campaigns, and consumer insights. Recognized for creative thinking and data-informed decisions, she thrives in fast-paced environments and builds narratives that connect deeply with audiences.'
+      bio: t('divyaMuruganBio')
     }
   ]
   return (
