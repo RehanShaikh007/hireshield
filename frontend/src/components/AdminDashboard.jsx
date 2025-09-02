@@ -4,13 +4,17 @@ import { useLanguage } from '../context/LanguageContext';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
-  const { user, getAllUsers, updateUserStatus, deleteUser } = useAuth();
+  const { user, getAllUsers, updateUserStatus, deleteUser, updateProfile, changePassword } = useAuth();
   const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [showContactView, setShowContactView] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  
+  // Profile editing states
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
 
   // Contact management states
   const [contacts, setContacts] = useState([]);
@@ -30,11 +34,40 @@ const AdminDashboard = () => {
   const [showContactDeleteConfirm, setShowContactDeleteConfirm] = useState(false);
   const [contactDeleteTarget, setContactDeleteTarget] = useState({ id: '', name: '' });
 
+  // Check if user signed up through Google (has googleId)
+  const isGoogleUser = user?.googleId || user?.authProvider === 'google';
+
+  // Profile form states
+  const [profileForm, setProfileForm] = useState({
+    username: user?.username || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || ''
+  });
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
   useEffect(() => {
     loadUsers();
     loadContacts();
     loadViewedStatus();
   }, []);
+
+  // Update profile form when user data changes
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        username: user.username || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || ''
+      });
+    }
+  }, [user]);
 
   // Listen for contact updates
   useEffect(() => {
@@ -156,6 +189,34 @@ const AdminDashboard = () => {
   const cancelContactDelete = () => {
     setShowContactDeleteConfirm(false);
     setContactDeleteTarget({ id: '', name: '' });
+  };
+
+  // Profile update handlers
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    const result = await updateProfile(profileForm);
+    if (result.success) {
+      toast.success(t('profileUpdated'));
+      setShowProfileEdit(false);
+    } else {
+      toast.error(result.error);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error(t('passwordsDoNotMatch'));
+      return;
+    }
+    const result = await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+    if (result.success) {
+      toast.success(t('passwordChanged'));
+      setShowPasswordChange(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } else {
+      toast.error(result.error);
+    }
   };
 
   const getRoleBadge = (role) => {
@@ -287,8 +348,16 @@ const AdminDashboard = () => {
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-4 sm:p-6 hover:bg-white/15 transition-all duration-300 hover:scale-105">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <h3 className="text-base sm:text-lg font-semibold text-white">{t('yourProfile')}</h3>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm sm:text-lg">👤</span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setShowProfileEdit(true)}
+                    className="px-3 py-1 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
+                  >
+                    Edit
+                  </button>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm sm:text-lg">👤</span>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2 sm:space-y-3">
@@ -317,6 +386,16 @@ const AdminDashboard = () => {
                     {user?.isActive ? t('activeUsers') : t('inactiveUsers')}
                   </span>
                 </div>
+                {!isGoogleUser && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => setShowPasswordChange(true)}
+                      className="w-full px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+                    >
+                      {t('changePassword')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -924,6 +1003,207 @@ const AdminDashboard = () => {
                     Delete Contact
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile Edit Modal */}
+        {showProfileEdit && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-[9999] flex items-center justify-center modal-backdrop">
+            <div className="relative mx-auto p-0 w-full max-w-md">
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 transform transition-all">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-white/20">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-lg font-semibold text-white">{t('updateProfile')}</h3>
+                      <p className="text-sm text-gray-300">Update your profile information</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowProfileEdit(false)}
+                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Form */}
+                <form onSubmit={handleUpdateProfile} className="px-6 py-4">
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1">
+                        {t('username')}
+                      </label>
+                      <input
+                        type="text"
+                        id="username"
+                        value={profileForm.username}
+                        onChange={(e) => setProfileForm({...profileForm, username: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-1">
+                        {t('firstName')}
+                      </label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        value={profileForm.firstName}
+                        onChange={(e) => setProfileForm({...profileForm, firstName: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-1">
+                        {t('lastName')}
+                      </label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        value={profileForm.lastName}
+                        onChange={(e) => setProfileForm({...profileForm, lastName: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                        {t('email')}
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={profileForm.email}
+                        onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex items-center justify-end space-x-3 mt-6 pt-4 border-t border-white/20">
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileEdit(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                    >
+                      {t('cancel')}
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 border border-transparent rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+                    >
+                      {t('updateProfile')}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Password Change Modal */}
+        {showPasswordChange && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-[9999] flex items-center justify-center modal-backdrop">
+            <div className="relative mx-auto p-0 w-full max-w-md">
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 transform transition-all">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-white/20">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-lg font-semibold text-white">{t('changePassword')}</h3>
+                      <p className="text-sm text-gray-300">Update your password</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowPasswordChange(false)}
+                    className="text-gray-400 hover:text-white transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Form */}
+                <form onSubmit={handleChangePassword} className="px-6 py-4">
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                        Current Password
+                      </label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        value={passwordForm.currentPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        value={passwordForm.newPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">
+                        Confirm New Password
+                      </label>
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        value={passwordForm.confirmPassword}
+                        onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                        className="w-full px-3 py-2 border border-white/20 rounded-lg bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div className="flex items-center justify-end space-x-3 mt-6 pt-4 border-t border-white/20">
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswordChange(false)}
+                      className="px-4 py-2 text-sm font-medium text-gray-300 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+                    >
+                      {t('cancel')}
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 border border-transparent rounded-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200"
+                    >
+                      {t('changePassword')}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

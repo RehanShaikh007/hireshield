@@ -166,13 +166,31 @@ router.get('/profile', authenticateToken, async (req, res) => {
 // Update user profile
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { firstName, lastName, email } = req.body;
+    console.log('Profile update request:', {
+      userId: req.user._id,
+      userRole: req.user.role,
+      requestBody: req.body
+    });
+    
+    const { username, firstName, lastName, email } = req.body;
     const user = req.user;
+
+    // Check if username is being updated and if it already exists
+    if (username && username !== user.username) {
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        console.log('Username already exists:', username);
+        return res.status(400).json({ 
+          message: 'Username already exists' 
+        });
+      }
+    }
 
     // Check if email is being updated and if it already exists
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
+        console.log('Email already exists:', email);
         return res.status(400).json({ 
           message: 'Email already exists' 
         });
@@ -180,11 +198,13 @@ router.put('/profile', authenticateToken, async (req, res) => {
     }
 
     // Update allowed fields
+    if (username) user.username = username;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
     if (email) user.email = email;
 
     await user.save();
+    console.log('Profile updated successfully for user:', user._id);
 
     res.json({
       message: 'Profile updated successfully',
