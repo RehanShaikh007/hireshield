@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import ImageCarousel from '../../utils/ImageCarousel'
-
+import { FiZap, FiShield, FiTrendingUp } from 'react-icons/fi'
 
 const Stat = ({ value, label }) => (
   <div className="p-3 sm:p-4 rounded-lg bg-white shadow-sm text-center">
@@ -98,13 +98,15 @@ const HomePage = () => {
         <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 sm:mb-6 text-center sm:text-left">{t('whyChooseUs')}</h2>
         <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {[
-            { title: t('fastReliable'), desc: t('fastReliableDesc'), icon: '⚡' },
-            { title: t('compliantByDesign'), desc: t('compliantByDesignDesc'), icon: '✅' },
-            { title: t('scalesWithYou'), desc: t('scalesWithYouDesc'), icon: '📈' }
+            { title: t('fastReliable'), desc: t('fastReliableDesc'), Icon: FiZap },
+            { title: t('compliantByDesign'), desc: t('compliantByDesignDesc'), Icon: FiShield },
+            { title: t('scalesWithYou'), desc: t('scalesWithYouDesc'), Icon: FiTrendingUp }
           ].map((f) => (
             <div key={f.title} className="group relative rounded-xl p-[1px] bg-gradient-to-b from-cyan-200 to-teal-200">
               <div className="h-full w-full rounded-xl bg-white p-4 sm:p-6 shadow-sm transition-transform duration-200 group-hover:-translate-y-0.5">
-                <div className="mb-3 inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-cyan-50 text-cyan-700 text-sm sm:text-base">{f.icon}</div>
+                <div className="mb-3 inline-flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-cyan-50 text-cyan-700">
+                  <f.Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
                 <h3 className="font-semibold mb-2 text-sm sm:text-base">{f.title}</h3>
                 <p className="text-xs sm:text-sm text-gray-600">{f.desc}</p>
               </div>

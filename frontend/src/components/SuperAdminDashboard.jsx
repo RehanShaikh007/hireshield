@@ -313,13 +313,13 @@ const SuperAdminDashboard = () => {
             {[
               { id: 'overview', name: t('overview'), icon: '' },
               { id: 'users', name: t('userManagement'), count: newUsersCount, icon: '' },
-              { id: 'admins', name: t('adminManagement'), count: newContactsCount, icon: '' },
+              { id: 'admins', name: t('Admin Management'), count: newContactsCount, icon: '' },
               { id: 'contacts', name: t('contactManagement'), count: newContactsCount, icon: '' }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 py-3 sm:py-4 px-3 sm:px-6 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 ${
+                className={`relative flex-1 py-3 sm:py-4 px-3 sm:px-6 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 cursor-pointer ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg border border-white/20'
                     : 'text-gray-300 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
@@ -467,7 +467,7 @@ const SuperAdminDashboard = () => {
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20">
             <div className="px-6 py-4 border-b border-white/20">
               <h3 className="text-lg font-semibold text-white">User Management</h3>
-              <p className="text-sm text-gray-300 mt-1">Managing {filteredUsers.length} regular users (excluding you and admins)</p>
+              <p className="text-sm text-gray-300 mt-1">Managing {filteredUsers.length} regular users</p>
             </div>
             
             {/* Search Bar */}
@@ -657,7 +657,7 @@ const SuperAdminDashboard = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-semibold text-white">Admin Management</h3>
-                  <p className="text-sm text-gray-300 mt-1">Managing {filteredAdmins.length} admins (excluding you)</p>
+                  <p className="text-sm text-gray-300 mt-1">Managing {filteredAdmins.length} admins</p>
                 </div>
                 <button
                   onClick={() => setShowCreateAdmin(true)}
