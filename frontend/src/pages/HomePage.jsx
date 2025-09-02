@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import ImageCarousel from '../../utils/ImageCarousel'
 import { FiZap, FiShield, FiTrendingUp } from 'react-icons/fi'
+
 
 const Stat = ({ value, label }) => (
   <div className="p-3 sm:p-4 rounded-lg bg-white shadow-sm text-center">
@@ -14,6 +15,14 @@ const Stat = ({ value, label }) => (
 
 const HomePage = () => {
   const { t } = useLanguage();
+  const [howItWorksRevealed, setHowItWorksRevealed] = useState(false)
+
+  useEffect(() => {
+    // Trigger reveal animation on mount after a small delay
+    const timer = setTimeout(() => setHowItWorksRevealed(true), 150)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div>
       <section className="relative overflow-hidden">
@@ -115,39 +124,53 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="relative">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white to-cyan-50/60"/>
-        <div className="container mx-auto px-4 py-12 sm:py-16 relative">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 sm:mb-6 text-center sm:text-left">{t('servicesTitle')}</h2>
-          <p className="text-gray-600 mb-6 sm:mb-8 max-w-3xl text-center sm:text-left text-sm sm:text-base">
-            {t('servicesDescription')}
-          </p>
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            {[t('employmentHistory'), t('educationChecks'), t('criminalRecords'), t('identityVerification'), t('addressVerification'), t('globalSanctions')].map((s) => (
-              <div key={s} className="group relative rounded-xl p-[1px] bg-gradient-to-b from-cyan-200 to-teal-200">
-                <div className="h-full w-full rounded-xl bg-white p-4 sm:p-6 shadow-sm transition-shadow duration-200 group-hover:shadow-md">
-                  <h3 className="font-semibold mb-2 text-sm sm:text-base">{s}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{t('comprehensiveScreening')}</p>
-                  <Link to="/services" className="text-cyan-700 text-sm font-medium">{t('learnMore')}</Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-2xl md:text-3xl font-semibold mb-6">{t('howItWorks')}</h2>
         <div className="relative grid gap-6 md:grid-cols-3">
-          <div aria-hidden className="pointer-events-none absolute left-1/2 top-12 hidden h-0.5 w-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-200 via-teal-200 to-cyan-200 md:block"/>
+          {/* Animated connector with arrow (desktop and up) */}
+          <div className="pointer-events-none absolute left-0 right-0 top-12 hidden md:block">
+            <svg viewBox="0 0 100 4" preserveAspectRatio="none" className="w-full h-3">
+              <defs>
+                <linearGradient id="stepLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#bae6fd" />
+                  <stop offset="50%" stopColor="#99f6e4" />
+                  <stop offset="100%" stopColor="#bae6fd" />
+                </linearGradient>
+              </defs>
+              <path d="M0 2 H100" stroke="url(#stepLine)" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+              {/* Moving arrow */}
+              <g>
+                <polygon points="0,2 3,0.8 3,3.2" fill="#0e7490">
+                  <animateMotion dur="4s" repeatCount="indefinite" keyTimes="0;1" keySplines="0.42 0 0.58 1" calcMode="spline">
+                    <mpath xlinkHref="#stepPath" />
+                  </animateMotion>
+                </polygon>
+              </g>
+              {/* Hidden path reference for motion */}
+              <path id="stepPath" d="M0 2 H100" fill="none" />
+            </svg>
+          </div>
           {[
             { step: t('initiate'), desc: t('initiateDesc') },
             { step: t('verify'), desc: t('verifyDesc') },
             { step: t('decide'), desc: t('decideDesc') }
           ].map((i, idx) => (
-            <div key={i.step} className="relative bg-white border rounded-lg p-6 shadow-sm">
-              <div className="absolute -top-4 left-6 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-cyan-600 to-teal-500 text-white text-sm font-semibold shadow">{idx + 1}</div>
-              <h3 className="mt-2 font-semibold mb-2">{i.step}</h3>
+            <div
+              key={i.step}
+              className={`relative rounded-xl p-6 shadow-sm bg-white border border-cyan-100/70 transition-all duration-700 ease-out hover:-translate-y-1 hover:shadow-md ${
+                howItWorksRevealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+              style={{ transitionDelay: `${idx * 150}ms` }}
+            >
+              {/* Step badge */}
+              <div className="absolute -top-4 left-6 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white ring-2 ring-cyan-200 text-cyan-700 text-sm font-semibold shadow">
+                {idx + 1}
+              </div>
+              {/* Decorative top border (mobile only) */}
+              <div className="md:hidden absolute -top-[2px] left-4 right-4 h-0.5 bg-gradient-to-r from-cyan-200 via-teal-200 to-cyan-200 overflow-hidden rounded-full">
+                <span className="block h-full w-12 bg-cyan-700/40 animate-pulse"></span>
+              </div>
+              <h3 className="mt-2 font-semibold mb-2 text-cyan-900">{i.step}</h3>
               <p className="text-sm text-gray-600">{i.desc}</p>
             </div>
           ))}
